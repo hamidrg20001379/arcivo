@@ -6,6 +6,7 @@ import logging
 import re
 import sqlite3
 import threading
+import unicodedata
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -13,6 +14,28 @@ from pathlib import Path
 from ..core.errors import DatabaseError
 
 log = logging.getLogger(__name__)
+
+_PERSIAN_RANK = {char: rank for rank, char in enumerate(["ا", "ب", "پ", "ت", "ث", "ج", "چ", "ح", "خ", "د", "ذ", "ر", "ز", "ژ", "س", "ش", "ص", "ض", "ط", "ظ", "ع", "غ", "ف", "ق", "ک", "گ", "ل", "م", "ن", "و", "ه", "ی"])}
+_PERSIAN_TRANSLATION = str.maketrans({"ي": "ی", "ى": "ی", "ك": "ک", "ۀ": "ه", "ة": "ه"})
+
+
+def _persian_sort_key(value: str | None) -> tuple[tuple[int, int], ...]:
+    text = unicodedata.normalize("NFKC", value or "").translate(_PERSIAN_TRANSLATION).casefold()
+    key: list[tuple[int, int]] = []
+    for char in text:
+        if unicodedata.combining(char) or char in "\u200c\u200d":
+            continue
+        if char in _PERSIAN_RANK:
+            key.append((2, _PERSIAN_RANK[char]))
+        elif "a" <= char <= "z":
+            key.append((1, ord(char)))
+        else:
+            key.append((0 if not char.isalpha() else 3, ord(char)))
+    return tuple(key)
+
+
+def _persian_compare(left: str | None, right: str | None) -> int:
+    return (_persian_sort_key(left) > _persian_sort_key(right)) - (_persian_sort_key(left) < _persian_sort_key(right))
 
 
 class Database:
@@ -43,6 +66,7 @@ class Database:
             raise DatabaseError(str(exc)) from exc
         conn.row_factory = sqlite3.Row
         conn.create_function("regexp", 2, lambda pattern, value: bool(re.search(pattern, value or "", re.IGNORECASE)))
+        conn.create_collation("ARCIVO_PERSIAN", _persian_compare)
         conn.execute("PRAGMA foreign_keys = ON")
         if not self._uri:
             conn.execute("PRAGMA journal_mode = WAL")

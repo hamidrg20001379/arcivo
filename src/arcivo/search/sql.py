@@ -74,7 +74,7 @@ IS_SQL = {
 }
 SORT_SQL = {
     "date": "m.date_ts", "size": "m.file_size", "name": "m.file_name COLLATE NOCASE", "type": "m.media_type",
-    "sender": "m.sender_name COLLATE NOCASE", "chat": "m.chat_name COLLATE NOCASE", "duration": "m.duration",
+    "sender": "coalesce(m.sender_name,m.chat_name) COLLATE ARCIVO_PERSIAN", "chat": "m.chat_name COLLATE NOCASE", "duration": "m.duration",
     "id": "m.id", "ext": "m.extension", "edited": "m.edit_ts",
 }
 _CMP = re.compile(r"^(>=|<=|>|<|=)?\s*(.+)$")

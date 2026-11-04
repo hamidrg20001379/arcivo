@@ -19,6 +19,19 @@ def test_split_keeps_triggers():
     assert len(parts) == 3 and parts[1].strip().endswith("END;")
 
 
+def test_persian_collation_orders_letters():
+    db = Database(":memory:")
+    try:
+        db.execute("CREATE TABLE names(value TEXT)")
+        db.execute("INSERT INTO names(value) VALUES (?)", ("دریا",))
+        db.execute("INSERT INTO names(value) VALUES (?)", ("پونه",))
+        db.execute("INSERT INTO names(value) VALUES (?)", ("تابان",))
+        rows = db.query("SELECT value FROM names ORDER BY value COLLATE ARCIVO_PERSIAN")
+        assert [row[0] for row in rows] == ["پونه", "تابان", "دریا"]
+    finally:
+        db.close()
+
+
 def test_fts_triggers(ctx, records):
     aid = ctx.accounts.ensure(1, "Me")
     ctx.messages.upsert_many(aid, records[:50])

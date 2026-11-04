@@ -43,6 +43,8 @@ def test_invalid_size():
 def test_order_clause():
     cq = compile_("sort:size")
     assert cq.order_by.startswith("(m.file_size IS NULL), m.file_size DESC")
+    cq = compile_("sort:sender")
+    assert cq.order_by.startswith("(coalesce(m.sender_name,m.chat_name) IS NULL), coalesce(m.sender_name,m.chat_name) COLLATE ARCIVO_PERSIAN DESC")
 
 
 def test_regex_and_at_search():
