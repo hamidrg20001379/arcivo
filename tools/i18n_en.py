@@ -103,6 +103,7 @@ EN = {
 "search.h_ext": "File extension(s)", "search.h_size": "File size: >, <, >=, ranges with ..",
 "search.h_duration": "Media duration (s, m, h or 1:30)", "search.h_date": "Date, month, year or ranges",
 "search.h_date_rel": "Relative dates", "search.h_people": "Sender or source chat (name or @username)", "search.h_tag": "Messages with a tag",
+"search.h_regex": "Python regular expression across searchable text and file metadata",
 "search.h_has": "Has a property", "search.h_is": "State", "search.h_fields": "Search one field only", "search.h_sort": "Sort results",
 "search.h_fields_list": "Available fields: {fields}", "search.h_persian": "Text in any language and script is supported.",
 # media

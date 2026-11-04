@@ -11,6 +11,7 @@ and `-` to negate. Quote values containing spaces.
 | `type:` | `type:audio,voice` | `text photo image video video_note gif audio voice document file media link sticker contact location poll dice …` |
 | `ext:` / `mime:` | `ext:pdf,docx` · `mime:image/*` | file extension / MIME type |
 | `filename:` / `caption:` | `filename:report` | match only in that field |
+| `regex:` | `regex:report_\d+\.pdf$` | Python regular expression across text and file metadata |
 | `sender:` / `from:` | `sender:@alice` · `sender:"Sara Ahmadi"` · `sender:me` | original sender |
 | `chat:` / `channel:` / `in:` | `chat:"Dev Notes"` | source chat of a forwarded message |
 | `domain:` | `domain:github.com` | messages containing links to a domain |

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import re
 import sqlite3
 import threading
 from collections.abc import Iterator
@@ -41,6 +42,7 @@ class Database:
         except sqlite3.Error as exc:
             raise DatabaseError(str(exc)) from exc
         conn.row_factory = sqlite3.Row
+        conn.create_function("regexp", 2, lambda pattern, value: bool(re.search(pattern, value or "", re.IGNORECASE)))
         conn.execute("PRAGMA foreign_keys = ON")
         if not self._uri:
             conn.execute("PRAGMA journal_mode = WAL")

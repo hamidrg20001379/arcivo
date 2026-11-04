@@ -542,6 +542,7 @@
   "h_persian": "Text in any language and script is supported.",
   "h_phrase": "Exact phrase",
   "h_prefix": "Words starting with “pre”",
+  "h_regex": "Python regular expression across searchable text and file metadata",
   "h_size": "File size: >, <, >=, ranges with ..",
   "h_sort": "Sort results",
   "h_tag": "Messages with a tag",

@@ -43,3 +43,15 @@ def test_invalid_size():
 def test_order_clause():
     cq = compile_("sort:size")
     assert cq.order_by.startswith("(m.file_size IS NULL), m.file_size DESC")
+
+
+def test_regex_and_at_search():
+    cq = compile_(r"regex:report_\d+\.pdf")
+    assert "REGEXP" in cq.where and cq.params[:7] == [r"report_\d+\.pdf"] * 7
+    cq = compile_("@of")
+    assert "file_name" in cq.where and cq.params == ["%@of%"] * 7
+
+
+def test_invalid_regex():
+    with pytest.raises(SearchSyntaxError):
+        compile_("regex:[")

@@ -37,6 +37,7 @@ FIELD_ALIASES: dict[str, str] = {
     "has": "has", "is": "is",
     "filename": "filename", "name": "filename", "file": "filename",
     "text": "text", "caption": "text",
+    "regex": "regex", "re": "regex",
     "id": "id",
     "domain": "domain", "site": "domain",
     "sort": "sort", "order": "order",

@@ -120,6 +120,14 @@ class SqlBuilder:
     def _clause(self, c: Clause, params: list[object]) -> str:
         f, v = c.field, c.value.strip()
         if f == "text*":
+            if "@" in v:
+                # shortcut: punctuation searches scan text columns; add an indexed prefilter if archives make it slow.
+                like = f"%{_like_escape(v)}%"
+                params.extend([like] * 7)
+                return ("(coalesce(m.text, '') LIKE ? ESCAPE '\\' OR coalesce(m.file_name, '') LIKE ? ESCAPE '\\' OR "
+                        "coalesce(m.sender_name, '') LIKE ? ESCAPE '\\' OR coalesce(m.sender_username, '') LIKE ? ESCAPE '\\' OR "
+                        "coalesce(m.chat_name, '') LIKE ? ESCAPE '\\' OR coalesce(m.performer, '') LIKE ? ESCAPE '\\' OR "
+                        "coalesce(m.audio_title, '') LIKE ? ESCAPE '\\')")
             params.append(fts_escape(v) if c.phrase else fts_escape(v) + "*")
             return "m.rowid IN (SELECT rowid FROM messages_fts WHERE messages_fts MATCH ?)"
         if f == "type":
@@ -143,6 +151,17 @@ class SqlBuilder:
         if f == "text":
             params.append(f"%{_like_escape(v)}%")
             return "text LIKE ? ESCAPE '\\'"
+        if f == "regex":
+            try:
+                re.compile(v)
+            except re.error as exc:
+                raise SearchSyntaxError(f"invalid regex '{v}'", field=f, value=v) from exc
+            # shortcut: regex scans the searchable columns; add an indexed prefilter if archives make it slow.
+            params.extend([v] * 7)
+            return ("(coalesce(m.text, '') REGEXP ? OR coalesce(m.file_name, '') REGEXP ? OR "
+                    "coalesce(m.sender_name, '') REGEXP ? OR coalesce(m.sender_username, '') REGEXP ? OR "
+                    "coalesce(m.chat_name, '') REGEXP ? OR coalesce(m.performer, '') REGEXP ? OR "
+                    "coalesce(m.audio_title, '') REGEXP ?)")
         if f == "domain":
             d = v.lower().removeprefix("www.")
             params.extend([d, d])

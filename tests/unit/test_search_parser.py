@@ -36,6 +36,11 @@ def test_unknown_field_is_text():
     assert q.nodes[0].field == "text*"
 
 
+def test_regex_field():
+    q = parse(r"regex:^report_\d+\.pdf$")
+    assert q.nodes[0].field == "regex"
+
+
 @pytest.mark.parametrize("bad", ["type:", "OR foo", "foo OR", "sort:banana", "order:sideways"])
 def test_errors(bad):
     with pytest.raises(SearchSyntaxError):

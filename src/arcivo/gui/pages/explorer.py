@@ -129,6 +129,7 @@ class SearchPage(Page):
             ("date:today / yesterday / last7d", t("search.h_date_rel")), ("sender:name  chat:name", t("search.h_people")),
             ("tag:Work", t("search.h_tag")), ("has:link / media / note / caption", t("search.h_has")),
             ("is:flagged / forwarded / edited / untagged", t("search.h_is")), ("name:report  text:hello", t("search.h_fields")),
+            (r"regex:report_\d+\.pdf", t("search.h_regex")),
             ("sort:size order:asc", t("search.h_sort")),
         ]
         body = "".join(f"<tr><td style='padding:4px 10px 4px 0'><code>{a}</code></td><td style='padding:4px 0'>{b}</td></tr>" for a, b in rows)

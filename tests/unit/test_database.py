@@ -26,6 +26,10 @@ def test_fts_triggers(ctx, records):
     some = next(r for r in records[:50] if r.text)
     word = some.text.split()[0]
     assert ctx.search.count(aid, word) >= 1
+    some.file_name = "archive_@of_01.mp4"
+    ctx.messages.upsert_many(aid, [some])
+    assert ctx.search.count(aid, "@of") == 1
+    assert ctx.search.count(aid, r"regex:^archive_@of_01\.mp4$") == 1
     # update text → FTS reflects change
     some.text = "zebracorn unique"
     ctx.messages.upsert_many(aid, [some])
